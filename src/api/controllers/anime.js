@@ -22,27 +22,23 @@ const getAnimeByID = async ( req, res, next ) => {
           }
 
           // Obtener los comentarios relacionados con el anime
-          const comments = await Comment.find( { anime: id } ).populate( 'user', 'userName email' );
+          const comments = await Comment.find( { anime: id } ).populate( "user", "userName email" );
 
           // Devolver el anime con comentarios
           return res.status( 200 ).json( {
                anime,
-               comments
+               comments,
           } );
      } catch ( error ) {
           return res.status( 400 ).json( { message: "Error al recuperar el anime y sus comentarios", error: error.message } );
      }
 };
 
-
-
-
-
 //! GET anime by Title
 const getAnimeByTitle = async ( req, res, next ) => {
      try {
           const { title } = req.params;
-          const regex = new RegExp( title, 'i' ); // 'i' para búsqueda insensible a mayúsculas/minúsculas
+          const regex = new RegExp( title, "i" ); // 'i' para búsqueda insensible a mayúsculas/minúsculas
           const animesByTitle = await Anime.find( { title: { $regex: regex } } );
           if ( animesByTitle.length === 0 ) {
                return res.status( 404 ).json( { message: "No se encontraron animes con ese título" } );
@@ -57,7 +53,7 @@ const getAnimeByTitle = async ( req, res, next ) => {
 const getAnimeByGenre = async ( req, res, next ) => {
      try {
           const { genre } = req.params;
-          const regex = new RegExp( genre, 'i' );
+          const regex = new RegExp( genre, "i" );
           const animesByGenre = await Anime.find( { genres: { $regex: regex } } );
           if ( animesByGenre.length === 0 ) {
                return res.status( 404 ).json( { message: "No se encontraron animes para el género proporcionado" } );
@@ -67,7 +63,6 @@ const getAnimeByGenre = async ( req, res, next ) => {
           return res.status( 400 ).json( { message: "Fallo en la búsqueda por género", error: error.message } );
      }
 };
-
 
 //! GET anime by STATUS
 const getAnimeByStatus = async ( req, res, next ) => {
@@ -136,108 +131,59 @@ const getAnimeAfterYear = async ( req, res, next ) => {
      }
 };
 
-
 //! POST anime
-// const postAnime = async ( req, res, next ) => {
-//      try {
-//           // const newAnime = new Anime( req.body );
-
-//           // Construir el nuevo anime con la información del cuerpo de la solicitud
-//           const newAnime = new Anime( {
-//                ...req.body,
-//                image: req.file ? req.file.path : null  // Guarda la URL de la imagen si existe
-//           } );
-
-//           const anime = await newAnime.save();
-//           return res.status( 200 ).json( anime );
-//      } catch ( error ) {
-//           return res.status( 400 ).json( { message: "Fallo en la creación del anime", error: error.message } );
-//      }
-// };
-
-//! POST anime
-const postAnime = async (req, res, next) => {
+const postAnime = async ( req, res, next ) => {
      try {
-         // Construir el nuevo anime con la información del cuerpo de la solicitud
-         const genres = Array.isArray(req.body.genres) ? req.body.genres : req.body.genres.split(',').map(genre => genre.trim());
-         const newAnime = new Anime({
-             ...req.body,
-             genres: genres,
-             image: req.file ? req.file.path : null  // Guarda la URL de la imagen si existe
-         });
- 
-         const anime = await newAnime.save();
-         return res.status(200).json(anime);
-     } catch (error) {
-         return res.status(400).json({ message: "Fallo en la creación del anime", error: error.message });
+          // Construir el nuevo anime con la información del cuerpo de la solicitud
+          const genres = Array.isArray( req.body.genres )
+               ? req.body.genres
+               : req.body.genres.split( "," ).map( ( genre ) => genre.trim() );
+          const newAnime = new Anime( {
+               ...req.body,
+               genres: genres,
+               image: req.file ? req.file.path : null, // Guarda la URL de la imagen si existe
+          } );
+
+          const anime = await newAnime.save();
+          return res.status( 200 ).json( anime );
+     } catch ( error ) {
+          return res.status( 400 ).json( { message: "Fallo en la creación del anime", error: error.message } );
      }
- };
- 
+};
 
-
-// //! PUT anime 
-// const putAnime = async ( req, res, next ) => {
-//      try {
-//           const { id } = req.params;
-//           const updateData = req.body;
-
-//           if ( req.file ) {
-//                const anime = await Anime.findById( id );
-//                if ( anime && anime.image ) {
-//                // Eliminar la imagen anterior si existe
-//                     await deleteFile( anime.image );
-//                }
-//                updateData.image = req.file.path;  // Actualizar con la nueva imagen de Cloudinary
-//           }
-
-//           const animeUpdated = await Anime.findByIdAndUpdate(
-//                id,
-//                { $set: updateData },  // Actualiza solo los campos proporcionados en el body
-//                { new: true, runValidators: true }  
-//           );
-
-//           if ( !animeUpdated ) {
-//                return res.status( 404 ).json( { message: "Anime no encontrado" } );
-//           }
-
-//           return res.status( 200 ).json( animeUpdated );
-//      } catch ( error ) {
-//           return res.status( 400 ).json( { message: "Fallo en la actualización del anime", error: error.message } );
-//      }
-// };
-const putAnime = async (req, res, next) => {
+const putAnime = async ( req, res, next ) => {
      try {
-         const { id } = req.params;
-         const updateData = req.body;
- 
-         if (req.file) {
-             const anime = await Anime.findById(id);
-             if (anime && anime.image) {
-                 await deleteFile(anime.image);
-             }
-             updateData.image = req.file.path;  // Update with the new image path
-         }
- 
-         const genres = Array.isArray(updateData.genres) ? updateData.genres : updateData.genres.split(',').map(genre => genre.trim());
-         updateData.genres = genres;
- 
-         const animeUpdated = await Anime.findByIdAndUpdate(
-             id,
-             { $set: updateData },  // Update only the provided fields
-             { new: true, runValidators: true }
-         );
- 
-         if (!animeUpdated) {
-             return res.status(404).json({ message: "Anime not found" });
-         }
- 
-         return res.status(200).json(animeUpdated);
-     } catch (error) {
-         return res.status(400).json({ message: "Failed to update anime", error: error.message });
-     }
- };
- 
+          const { id } = req.params;
+          const updateData = req.body;
 
+          if ( req.file ) {
+               const anime = await Anime.findById( id );
+               if ( anime && anime.image ) {
+                    await deleteFile( anime.image );
+               }
+               updateData.image = req.file.path; // Update with the new image path
+          }
+
+          const genres = Array.isArray( updateData.genres )
+               ? updateData.genres
+               : updateData.genres.split( "," ).map( ( genre ) => genre.trim() );
+          updateData.genres = genres;
+
+          const animeUpdated = await Anime.findByIdAndUpdate(
+               id,
+               { $set: updateData }, // Update only the provided fields
+               { new: true, runValidators: true }
+          );
+
+          if ( !animeUpdated ) {
+               return res.status( 404 ).json( { message: "Anime not found" } );
+          }
+
+          return res.status( 200 ).json( animeUpdated );
+     } catch ( error ) {
+          return res.status( 400 ).json( { message: "Failed to update anime", error: error.message } );
+     }
+};
 
 //! DELETE anime
 const deleteAnime = async ( req, res, next ) => {
@@ -260,6 +206,16 @@ const deleteAnime = async ( req, res, next ) => {
      }
 };
 
-
-
-module.exports = { getAnime, getAnimeByID, getAnimeByTitle, getAnimeByGenre, getAnimeByStatus, getAnimeByRating, getAnimeBeforeYear, getAnimeAfterYear, postAnime, putAnime, deleteAnime }; 
+module.exports = {
+     getAnime,
+     getAnimeByID,
+     getAnimeByTitle,
+     getAnimeByGenre,
+     getAnimeByStatus,
+     getAnimeByRating,
+     getAnimeBeforeYear,
+     getAnimeAfterYear,
+     postAnime,
+     putAnime,
+     deleteAnime,
+};

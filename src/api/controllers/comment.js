@@ -18,11 +18,11 @@ const postComment = async ( req, res, next ) => {
 
           // Crea el comentario
           const newComment = new Comment( {
-               user: userId,  // Usa el ID del usuario autenticado
-               anime: anime,  // ID del anime sobre el que se comenta
-               title: title, //
-               text: text,    // Texto del comentario
-               rating: rating // Puntuación 
+               user: userId,  
+               anime: anime,  
+               title: title, 
+               text: text,   
+               rating: rating 
           } );
 
 

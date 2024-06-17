@@ -2,8 +2,6 @@ const { isAuth, isAdmin } = require( '../../middlewares/auth' );
 const upload = require( '../../middlewares/file' );
 const { getAnime, postAnime, getAnimeByID, getAnimeByTitle, getAnimeByGenre, getAnimeByStatus, getAnimeByRating, getAnimeBeforeYear, getAnimeAfterYear, deleteAnime, putAnime } = require( '../controllers/anime' );
 
-
-
 const animeRouter = require('express').Router();
 
 animeRouter.get('/', getAnime);

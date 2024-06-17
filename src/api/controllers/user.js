@@ -67,9 +67,6 @@ const login = async ( req, res, next ) => {
      }
 };
 
-
-
-
 //* PUT User
 const updateUser = async ( req, res, next ) => {
      try {
@@ -132,7 +129,5 @@ const deleteUser = async ( req, res, next ) => {
           return res.status( 400 ).json( { message: "Error al eliminar el usuario", error: error.message } );
      }
 };
-
-
 
 module.exports = { register, login, getUser, getUserByID, updateUser, deleteUser };
