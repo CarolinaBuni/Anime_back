@@ -27,22 +27,43 @@ const getUserByID = async ( req, res, next ) => {
 };
 
 //* REGISTER
-const register = async ( req, res, next ) => {
+// const register = async ( req, res, next ) => {
+//      try {
+//           const newUser = new User( req.body );
+
+//           const userDuplicated = await User.findOne( { email: req.body.email } );
+
+//           if ( userDuplicated ) {
+//                return res.status( 400 ).json( { message: "Este usuario ya existe" } );
+//           }
+
+//           const userSaved = await newUser.save();
+//           return res.status( 201 ).json( userSaved );
+//      } catch ( error ) {
+//           return res.status( 400 ).json( { message: "Error al registrarse", error: error.message } );
+//      }
+// };
+
+const register = async (req, res, next) => {
      try {
-          const newUser = new User( req.body );
-
-          const userDuplicated = await User.findOne( { email: req.body.email } );
-
-          if ( userDuplicated ) {
-               return res.status( 400 ).json( { message: "Este usuario ya existe" } );
-          }
-
-          const userSaved = await newUser.save();
-          return res.status( 201 ).json( userSaved );
-     } catch ( error ) {
-          return res.status( 400 ).json( { message: "Error al registrarse", error: error.message } );
+         const newUser = new User(req.body);
+ 
+         const userDuplicated = await User.findOne({ email: req.body.email });
+ 
+         if (userDuplicated) {
+             return res.status(400).json({ message: "Este usuario ya existe" });
+         }
+ 
+         newUser.password = bcrypt.hashSync(req.body.password, 10); // Hash the password
+ 
+         const userSaved = await newUser.save();
+         const token = generateSign(userSaved.email, userSaved._id);
+ 
+         return res.status(201).json({ user: userSaved, token });
+     } catch (error) {
+         return res.status(400).json({ message: "Error al registrarse", error: error.message });
      }
-};
+ };
 
 
 //* LOGIN
