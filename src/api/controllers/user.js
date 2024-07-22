@@ -51,57 +51,26 @@ const register = async (req, res, next) => {
 
 
 //* LOGIN
-// const login = async ( req, res, next ) => {
-//      console.log( "Login Request Body:", req.body );  // Verifica que el email y password son correctos
-//      try {
-//           const user = await User.findOne( { email: req.body.email } );
-
-//           if ( user ) {
-//                console.log( "User found:", user );  // Log adicional para verificar el usuario encontrado
-//                if ( bcrypt.compareSync( req.body.password, user.password ) ) {
-//                     const token = generateSign( user.email, user._id );
-//                     return res.status( 200 ).json( { user, token } );
-//                } else {
-//                     return res.status( 400 ).json( "Usuario o contraseña erróneos" );
-//                }
-//           } else {
-//                return res.status( 400 ).json( "Usuario o contraseña no existe" );
-//           }
-//      } catch ( error ) {
-//           return res.status( 400 ).json( "Usuaro o contraseña incorrectas" );
-//      }
-// };
-
-const login = async (req, res, next) => {
-     console.log("Login Request Body:", req.body);  // Log de los datos recibidos en la solicitud de login
- 
+const login = async ( req, res, next ) => {
+     console.log( "Login Request Body:", req.body );  // Verifica que el email y password son correctos
      try {
-         const { email, password } = req.body;
-         const user = await User.findOne({ email: email.toLowerCase() });  // Convertir email a minúsculas
- 
-         if (user) {
-             console.log("User found:", user);  // Log del usuario encontrado en la base de datos
- 
-             // Comprobación de la contraseña
-             const passwordMatch = bcrypt.compareSync(password, user.password);
-             console.log("Password match:", passwordMatch);  // Log del resultado de la comparación de contraseñas
- 
-             if (passwordMatch) {
-                 const token = generateSign(user.email, user._id);
-                 return res.status(200).json({ user, token });
-             } else {
-                 console.log("Incorrect password for user:", email);  // Log adicional si la contraseña es incorrecta
-                 return res.status(400).json({ message: "Usuario o contraseña erróneos" });
-             }
-         } else {
-             console.log("User not found for email:", email);  // Log adicional si no se encuentra el usuario
-             return res.status(400).json({ message: "Usuario o contraseña no existe" });
-         }
-     } catch (error) {
-         console.error("Error during login:", error);  // Log del error
-         return res.status(400).json({ message: "Usuario o contraseña incorrectas" });
+          const user = await User.findOne( { email: req.body.email } );
+
+          if ( user ) {
+               console.log( "User found:", user );  // Log adicional para verificar el usuario encontrado
+               if ( bcrypt.compareSync( req.body.password, user.password ) ) {
+                    const token = generateSign( user.email, user._id );
+                    return res.status( 200 ).json( { user, token } );
+               } else {
+                    return res.status( 400 ).json( "Usuario o contraseña erróneos" );
+               }
+          } else {
+               return res.status( 400 ).json( "Usuario o contraseña no existe" );
+          }
+     } catch ( error ) {
+          return res.status( 400 ).json( "Usuaro o contraseña incorrectas" );
      }
- };
+};
 
 //* PUT User
 const updateUser = async ( req, res, next ) => {
