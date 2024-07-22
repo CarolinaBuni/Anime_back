@@ -38,7 +38,6 @@ const register = async (req, res, next) => {
              return res.status(400).json({ message: "Este usuario ya existe" });
          }
  
-         newUser.password = bcrypt.hashSync(req.body.password, 10); // Hash the password
  
          const userSaved = await newUser.save();
          const token = generateSign(userSaved.email, userSaved._id);
@@ -62,7 +61,7 @@ const login = async ( req, res, next ) => {
                     const token = generateSign( user.email, user._id );
                     return res.status( 200 ).json( { user, token } );
                } else {
-                    return res.status( 400 ).json( "Usuario o contraseña erróneos" );
+                    return res.status( 400 ).json( "Usuario o contraseña erróneos, entra aquí?" );
                }
           } else {
                return res.status( 400 ).json( "Usuario o contraseña no existe" );
@@ -71,6 +70,7 @@ const login = async ( req, res, next ) => {
           return res.status( 400 ).json( "Usuaro o contraseña incorrectas" );
      }
 };
+
 
 //* PUT User
 const updateUser = async ( req, res, next ) => {
