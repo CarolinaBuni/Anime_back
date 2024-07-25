@@ -2,15 +2,15 @@ const { deleteFile } = require( "../../utils/deleteFile" );
 const Anime = require( "../models/anime" );
 const Comment = require( "../models/comment" );
 
-// //! GET anime
-// const getAnime = async ( req, res, next ) => {
-//      try {
-//           const animes = await Anime.find();
-//           return res.status( 201 ).json( animes );
-//      } catch ( error ) {
-//           return res.status( 400 ).json( "Fallo en la recuperación de los animes" );
-//      }
-// };
+//! GET anime
+const getAnime = async ( req, res, next ) => {
+     try {
+          const animes = await Anime.find();
+          return res.status( 201 ).json( animes );
+     } catch ( error ) {
+          return res.status( 400 ).json( "Fallo en la recuperación de los animes" );
+     }
+};
 
 // //! GET anime by ID
 // const getAnimeByID = async ( req, res, next ) => {
@@ -269,7 +269,7 @@ const deleteAnime = async ( req, res, next ) => {
 };
 
 module.exports = {
-     // getAnime,
+     getAnime,
      getAnimeByCriteria,
      // getAnimeByID,
      // getAnimeByTitle,
