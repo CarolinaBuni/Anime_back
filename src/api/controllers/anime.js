@@ -2,132 +2,193 @@ const { deleteFile } = require( "../../utils/deleteFile" );
 const Anime = require( "../models/anime" );
 const Comment = require( "../models/comment" );
 
-//! GET anime
-const getAnime = async ( req, res, next ) => {
+// //! GET anime
+// const getAnime = async ( req, res, next ) => {
+//      try {
+//           const animes = await Anime.find();
+//           return res.status( 201 ).json( animes );
+//      } catch ( error ) {
+//           return res.status( 400 ).json( "Fallo en la recuperación de los animes" );
+//      }
+// };
+
+// //! GET anime by ID
+// const getAnimeByID = async ( req, res, next ) => {
+//      try {
+//           const { id } = req.params; // ID del anime
+//           const anime = await Anime.findById( id );
+//           if ( !anime ) {
+//                return res.status( 404 ).json( { message: "Anime no encontrado" } );
+//           }
+
+//           // Obtener los comentarios relacionados con el anime
+//           const comments = await Comment.find( { anime: id } ).populate( "user", "userName email" );
+
+//           // Devolver el anime con comentarios
+//           return res.status( 200 ).json( {
+//                anime,
+//                comments,
+//           } );
+//      } catch ( error ) {
+//           return res.status( 400 ).json( { message: "Error al recuperar el anime y sus comentarios", error: error.message } );
+//      }
+// };
+
+// //! GET anime by Title
+// const getAnimeByTitle = async ( req, res, next ) => {
+//      try {
+//           const { title } = req.params;
+//           const regex = new RegExp( title, "i" ); // 'i' para búsqueda insensible a mayúsculas/minúsculas
+//           const animesByTitle = await Anime.find( { title: { $regex: regex } } );
+//           if ( animesByTitle.length === 0 ) {
+//                return res.status( 404 ).json( { message: "No se encontraron animes con ese título" } );
+//           }
+//           return res.status( 200 ).json( animesByTitle );
+//      } catch ( error ) {
+//           return res.status( 400 ).json( { message: "Fallo en la búsqueda por título", error: error.message } );
+//      }
+// };
+
+// //! GET anime by GENRE
+// const getAnimeByGenre = async ( req, res, next ) => {
+//      try {
+//           const { genre } = req.params;
+//           const regex = new RegExp( genre, "i" );
+//           const animesByGenre = await Anime.find( { genres: { $regex: regex } } );
+//           if ( animesByGenre.length === 0 ) {
+//                return res.status( 404 ).json( { message: "No se encontraron animes para el género proporcionado" } );
+//           }
+//           return res.status( 200 ).json( animesByGenre );
+//      } catch ( error ) {
+//           return res.status( 400 ).json( { message: "Fallo en la búsqueda por género", error: error.message } );
+//      }
+// };
+
+// //! GET anime by STATUS
+// const getAnimeByStatus = async ( req, res, next ) => {
+//      try {
+//           const { status } = req.params;
+//           const animeByStatus = await Anime.find( { status: status } );
+//           if ( animeByStatus.length === 0 ) {
+//                return res.status( 404 ).json( { message: "No se encontraron animes con el estado proporcionado" } );
+//           }
+//           return res.status( 200 ).json( animeByStatus );
+//      } catch ( error ) {
+//           return res.status( 400 ).json( { message: "Fallo en la búsqueda por status", error: error.message } );
+//      }
+// };
+
+// //! GET anime by Average RATING
+// const getAnimeByRating = async ( req, res, next ) => {
+//      try {
+//           const { rating, condition } = req.params;
+//           let query = {};
+//           if ( condition === "gt" ) {
+//                query.averageRating = { $gt: parseFloat( rating ) };
+//           } else if ( condition === "lt" ) {
+//                query.averageRating = { $lt: parseFloat( rating ) };
+//           } else if ( condition === "gte" ) {
+//                query.averageRating = { $gte: parseFloat( rating ) };
+//           } else {
+//                return res.status( 400 ).json( { message: "Condición de búsqueda inválida" } );
+//           }
+
+//           const animeByRating = await Anime.find( query );
+//           if ( animeByRating.length === 0 ) {
+//                return res.status( 404 ).json( { message: "No se encontraron animes con el criterio especificado" } );
+//           }
+//           return res.status( 200 ).json( animeByRating );
+//      } catch ( error ) {
+//           return res.status( 400 ).json( { message: "Fallo en la búsqueda por calificación promedio", error: error.message } );
+//      }
+// };
+
+// //! GET animes before YEAR
+// const getAnimeBeforeYear = async ( req, res, next ) => {
+//      try {
+//           const { year } = req.params;
+//           const animes = await Anime.find( { releaseYear: { $lt: parseInt( year ) } } );
+//           if ( animes.length === 0 ) {
+//                return res.status( 404 ).json( { message: "No se encontraron animes antes del año " + year } );
+//           }
+//           return res.status( 200 ).json( animes );
+//      } catch ( error ) {
+//           return res.status( 400 ).json( { message: "Fallo en la búsqueda por año de lanzamiento", error: error.message } );
+//      }
+// };
+
+// //! GET animes after YEAR
+// const getAnimeAfterYear = async ( req, res, next ) => {
+//      try {
+//           const { year } = req.params;
+//           const animes = await Anime.find( { releaseYear: { $gt: parseInt( year ) } } );
+//           if ( animes.length === 0 ) {
+//                return res.status( 404 ).json( { message: "No se encontraron animes después del año " + year } );
+//           }
+//           return res.status( 200 ).json( animes );
+//      } catch ( error ) {
+//           return res.status( 400 ).json( { message: "Fallo en la búsqueda por año de lanzamiento", error: error.message } );
+//      }
+// };
+
+//! GET anime by various criteria
+const getAnimeByCriteria = async ( req, res, next ) => {
      try {
-          const animes = await Anime.find();
-          return res.status( 201 ).json( animes );
-     } catch ( error ) {
-          return res.status( 400 ).json( "Fallo en la recuperación de los animes" );
-     }
-};
+          const { criteria, value, condition } = req.params;
 
-//! GET anime by ID
-const getAnimeByID = async ( req, res, next ) => {
-     try {
-          const { id } = req.params; // ID del anime
-          const anime = await Anime.findById( id );
-          if ( !anime ) {
-               return res.status( 404 ).json( { message: "Anime no encontrado" } );
-          }
-
-          // Obtener los comentarios relacionados con el anime
-          const comments = await Comment.find( { anime: id } ).populate( "user", "userName email" );
-
-          // Devolver el anime con comentarios
-          return res.status( 200 ).json( {
-               anime,
-               comments,
-          } );
-     } catch ( error ) {
-          return res.status( 400 ).json( { message: "Error al recuperar el anime y sus comentarios", error: error.message } );
-     }
-};
-
-//! GET anime by Title
-const getAnimeByTitle = async ( req, res, next ) => {
-     try {
-          const { title } = req.params;
-          const regex = new RegExp( title, "i" ); // 'i' para búsqueda insensible a mayúsculas/minúsculas
-          const animesByTitle = await Anime.find( { title: { $regex: regex } } );
-          if ( animesByTitle.length === 0 ) {
-               return res.status( 404 ).json( { message: "No se encontraron animes con ese título" } );
-          }
-          return res.status( 200 ).json( animesByTitle );
-     } catch ( error ) {
-          return res.status( 400 ).json( { message: "Fallo en la búsqueda por título", error: error.message } );
-     }
-};
-
-//! GET anime by GENRE
-const getAnimeByGenre = async ( req, res, next ) => {
-     try {
-          const { genre } = req.params;
-          const regex = new RegExp( genre, "i" );
-          const animesByGenre = await Anime.find( { genres: { $regex: regex } } );
-          if ( animesByGenre.length === 0 ) {
-               return res.status( 404 ).json( { message: "No se encontraron animes para el género proporcionado" } );
-          }
-          return res.status( 200 ).json( animesByGenre );
-     } catch ( error ) {
-          return res.status( 400 ).json( { message: "Fallo en la búsqueda por género", error: error.message } );
-     }
-};
-
-//! GET anime by STATUS
-const getAnimeByStatus = async ( req, res, next ) => {
-     try {
-          const { status } = req.params;
-          const animeByStatus = await Anime.find( { status: status } );
-          if ( animeByStatus.length === 0 ) {
-               return res.status( 404 ).json( { message: "No se encontraron animes con el estado proporcionado" } );
-          }
-          return res.status( 200 ).json( animeByStatus );
-     } catch ( error ) {
-          return res.status( 400 ).json( { message: "Fallo en la búsqueda por status", error: error.message } );
-     }
-};
-
-//! GET anime by Average RATING
-const getAnimeByRating = async ( req, res, next ) => {
-     try {
-          const { rating, condition } = req.params;
           let query = {};
-          if ( condition === "gt" ) {
-               query.averageRating = { $gt: parseFloat( rating ) };
-          } else if ( condition === "lt" ) {
-               query.averageRating = { $lt: parseFloat( rating ) };
-          } else if ( condition === "gte" ) {
-               query.averageRating = { $gte: parseFloat( rating ) };
-          } else {
-               return res.status( 400 ).json( { message: "Condición de búsqueda inválida" } );
+
+          switch ( criteria ) {
+               case 'id':
+                    query._id = value;
+                    break;
+               case 'title':
+                    query.title = { $regex: new RegExp( value, "i" ) };
+                    break;
+               case 'genre':
+                    query.genres = { $regex: new RegExp( value, "i" ) };
+                    break;
+               case 'status':
+                    query.status = value;
+                    break;
+               case 'rating':
+                    if ( !condition ) {
+                         return res.status( 400 ).json( { message: "Condición de búsqueda inválida" } );
+                    }
+                    if ( condition === "gt" ) {
+                         query.averageRating = { $gt: parseFloat( value ) };
+                    } else if ( condition === "lt" ) {
+                         query.averageRating = { $lt: parseFloat( value ) };
+                    } else if ( condition === "gte" ) {
+                         query.averageRating = { $gte: parseFloat( value ) };
+                    } else {
+                         return res.status( 400 ).json( { message: "Condición de búsqueda inválida" } );
+                    }
+                    break;
+               case 'beforeYear':
+                    query.releaseYear = { $lt: parseInt( value ) };
+                    break;
+               case 'afterYear':
+                    query.releaseYear = { $gt: parseInt( value ) };
+                    break;
+               default:
+                    return res.status( 400 ).json( { message: "Criterio de búsqueda inválido" } );
           }
 
-          const animeByRating = await Anime.find( query );
-          if ( animeByRating.length === 0 ) {
+          const animes = await Anime.find( query );
+          if ( animes.length === 0 ) {
                return res.status( 404 ).json( { message: "No se encontraron animes con el criterio especificado" } );
           }
-          return res.status( 200 ).json( animeByRating );
-     } catch ( error ) {
-          return res.status( 400 ).json( { message: "Fallo en la búsqueda por calificación promedio", error: error.message } );
-     }
-};
 
-//! GET animes before YEAR
-const getAnimeBeforeYear = async ( req, res, next ) => {
-     try {
-          const { year } = req.params;
-          const animes = await Anime.find( { releaseYear: { $lt: parseInt( year ) } } );
-          if ( animes.length === 0 ) {
-               return res.status( 404 ).json( { message: "No se encontraron animes antes del año " + year } );
+          if ( criteria === 'id' ) {
+               // Obtener los comentarios relacionados con el anime
+               const comments = await Comment.find( { anime: value } ).populate( "user", "userName email" );
+               return res.status( 200 ).json( { anime: animes[ 0 ], comments } );
+          } else {
+               return res.status( 200 ).json( animes );
           }
-          return res.status( 200 ).json( animes );
      } catch ( error ) {
-          return res.status( 400 ).json( { message: "Fallo en la búsqueda por año de lanzamiento", error: error.message } );
-     }
-};
-
-//! GET animes after YEAR
-const getAnimeAfterYear = async ( req, res, next ) => {
-     try {
-          const { year } = req.params;
-          const animes = await Anime.find( { releaseYear: { $gt: parseInt( year ) } } );
-          if ( animes.length === 0 ) {
-               return res.status( 404 ).json( { message: "No se encontraron animes después del año " + year } );
-          }
-          return res.status( 200 ).json( animes );
-     } catch ( error ) {
-          return res.status( 400 ).json( { message: "Fallo en la búsqueda por año de lanzamiento", error: error.message } );
+          return res.status( 400 ).json( { message: "Fallo en la búsqueda por criterio", error: error.message } );
      }
 };
 
@@ -151,6 +212,7 @@ const postAnime = async ( req, res, next ) => {
      }
 };
 
+//! PUT anime
 const putAnime = async ( req, res, next ) => {
      try {
           const { id } = req.params;
@@ -207,14 +269,15 @@ const deleteAnime = async ( req, res, next ) => {
 };
 
 module.exports = {
-     getAnime,
-     getAnimeByID,
-     getAnimeByTitle,
-     getAnimeByGenre,
-     getAnimeByStatus,
-     getAnimeByRating,
-     getAnimeBeforeYear,
-     getAnimeAfterYear,
+     // getAnime,
+     getAnimeByCriteria,
+     // getAnimeByID,
+     // getAnimeByTitle,
+     // getAnimeByGenre,
+     // getAnimeByStatus,
+     // getAnimeByRating,
+     // getAnimeBeforeYear,
+     // getAnimeAfterYear,
      postAnime,
      putAnime,
      deleteAnime,
