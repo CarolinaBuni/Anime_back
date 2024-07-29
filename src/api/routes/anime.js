@@ -5,14 +5,6 @@ const { getAnime, getAnimeByCriteria, postAnime, deleteAnime, putAnime } = requi
 const animeRouter = require('express').Router();
 
 animeRouter.get('/', getAnime);
-
-// animeRouter.get("/:id", getAnimeByID);
-// animeRouter.get("/title/:title", getAnimeByTitle);
-// animeRouter.get("/genre/:genre", getAnimeByGenre);
-// animeRouter.get("/status/:status", getAnimeByStatus);
-// animeRouter.get("/rating/:condition/:rating", getAnimeByRating);
-// animeRouter.get("/release-year/before/:year", getAnimeBeforeYear);
-// animeRouter.get("/release-year/after/:year", getAnimeAfterYear);
 animeRouter.get("/:criteria/:value/:condition?", getAnimeByCriteria);
 
 animeRouter.post("/", [isAuth], [isAdmin], upload.single("image"), postAnime);
